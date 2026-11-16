@@ -8,6 +8,11 @@
     name: common
     tasks_from: nodejs
 
+- name: systemd setup
+  include_role:
+    name: common
+    tasks_from: systemd-setup
+
     
 
 # - name: copy catalogue.service file
@@ -15,36 +20,33 @@
 #     src:  catalogue.service.j2
 #     dest: /etc/systemd/system/catalogue.service
 
-# - name: download mongodb repo
-#   copy:
-#     src:  mongo.repo
-#     dest: /etc/yum.repos.d/mongo.repo
+- name: copy mongo repo
+  copy:
+    src:  mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
 
-# - name: install mongodb client
-#   dnf:
-#     name: mongodb-mongosh
-#     state:  present
+- name: install mongodb client
+  dnf:
+    name: mongodb-mongosh
+    state:  present
 
-# - name: check products loaded or net
-#   command: mongosh --host "{{ mongodb_host }}" --quiet --eval 'db.getSiblingDB("catalogue").products.countDocuments()'
-#   register: product_count
+- name: check products loaded or net
+  command: mongosh --host "{{ mongodb_host }}" --quiet --eval 'db.getSiblingDB("catalogue").products.countDocuments()'
+  register: product_count
 
-# - name: print product count
-#   debug:
-#     msg: "{{ product_count }}"
+- name: print product count
+  debug:
+    msg: "{{ product_count }}"
 
-# - name: load products
-#   shell:  mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
-#   when: product_count.stdout | int == 0
+- name: load products
+  shell:  mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
+  when: product_count.stdout | int == 0
 
-# - name: daemon reload
-#   systemd_service:
-#     daemon_reload: true
+- name: restart application
+  include_role:
+    name: common
+    tasks_from: restart
 
-# - name: start and enable catalogue
-#   service:
-#     name: catalogue
-#     state: restarted
-#     enabled: yes
+
 
 
