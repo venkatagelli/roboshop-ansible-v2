@@ -5,6 +5,6 @@
 
 - name: start and enable 
   service:
-    name: {{ component }}
+    name: "{{ component }}"
     state: restarted
     enabled: yes
